@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name          TagPro player-specific sounds based on event but with JSON
-// @namespace     Poeticalto
+// @name          TagPro CapSounds
 // @description   Plays a desired sound when a specific player caps the flag
 // @include       https://tagpro*.koalabeast.com/game
 // @include       https://tagpro*.koalabeast.com/game?*
 // @include       https://bash-tp.github.io/tagpro-vcr/*
 // @include       https://*.parretlabs.xyz/flagtag/
+// @updateURL     https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/capsounds.user.js
+// @downloadURL   https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/capsounds.user.js
 // @author        Poeticalto, Hjalpa
 // @version       1.00
 // ==/UserScript==
