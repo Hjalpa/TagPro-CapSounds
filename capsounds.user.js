@@ -8,7 +8,7 @@
 // @updateURL     https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/capsounds.user.js
 // @downloadURL   https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/capsounds.user.js
 // @author        Poeticalto, Hjalpa
-// @version       1.01
+// @version       1.02
 // ==/UserScript==
 
 /* globals tagpro, PIXI */
@@ -22,9 +22,7 @@ let playerData;
 let originalMusicVolume = 1;
 const FADE_DURATION = 200;
 const MIN_VOLUME = 0.2;
-const TIMEOUT_DURATION = 10000;
-let musicTimeout;
-let soundPlaying = false; // Added flag
+let soundPlaying = false;
 
 tagpro.ready(function () {
     let dummyPlayers = {};
@@ -96,63 +94,58 @@ tagpro.ready(function () {
 
     tagpro.socket.on("score", function (message) {
         if (tagpro.state !== 5) {
+            document.getElementById("cheering").pause();
+            document.getElementById("cheering").currentTime = 0;
+            document.getElementById("sigh").pause();
+            document.getElementById("sigh").currentTime = 0;
 
-        clearTimeout(musicTimeout);
+            let musicElement = document.getElementById("music");
+            if (musicElement) {
+                originalMusicVolume = musicElement.volume;
+                fadeOutMusic(musicElement);
+            }
 
-        document.getElementById("cheering").pause();
-        document.getElementById("cheering").currentTime = 0;
-        document.getElementById("sigh").pause();
-        document.getElementById("sigh").currentTime = 0;
 
-        let musicElement = document.getElementById("music");
-        if (musicElement) {
-            originalMusicVolume = musicElement.volume;
-            fadeOutMusic(musicElement);
-            musicTimeout = setTimeout(function () {
-                if (musicElement.volume <= MIN_VOLUME) {
-                    fadeInMusic(musicElement, originalMusicVolume);
-                }
-            }, TIMEOUT_DURATION);
-        }
-
-        let waitTimeout = tagpro.ping.avg + 30;
+            let waitTimeout = tagpro.ping.avg + 30;
         window.setTimeout(function () {
-            for (let x in tagpro.players) {
+           for (let x in tagpro.players) {
                 let pName = tagpro.players[x].name;
                 let pCaps = tagpro.players[x]["s-captures"];
-                if (!(pName in dummyPlayers)) {
+                 if (!(pName in dummyPlayers)) {
                     dummyPlayers[pName] = 0;
                     continue;
                 }
                 if (dummyPlayers[pName] !== pCaps) {
                     dummyPlayers[pName] = pCaps;
 
+                    // Stop the currently playing sound if any
                     if (!playerSound.paused) {
                         playerSound.pause();
                         playerSound.currentTime = 0;
                     }
 
+
                      //Event listener for when sound is finished.
-                        playerSound.addEventListener('ended', function() {
-                                soundPlaying = false; //Reset flag so another sound can be played
-                                if (musicElement) {
-                                    fadeInMusic(musicElement, originalMusicVolume);
-                                }
-                         });
+                    playerSound.addEventListener('ended', function() {
+                        soundPlaying = false;
+                        if (musicElement) {
+                            fadeInMusic(musicElement, originalMusicVolume);
+                        }
+                 });
 
-                    if (playerData[pName] && !soundPlaying) {
-                        soundPlaying = true; // set flag
-                        playerSound.src = playerData[pName][0];
-                        playerSound.volume = (playerData[pName].length > 1 ? playerData[pName][1] : 1);
-                        playerSound.play();
 
-                    } else if (playerData["some ball"] && !soundPlaying) {
-                        soundPlaying = true; // set flag
-                         playerSound.src = playerData["some ball"][0];
-                         playerSound.volume = (playerData["some ball"].length > 1 ? playerData["some ball"][1] : 1);
+                    if (playerData[pName]) {
+                         playerSound.src = playerData[pName][0];
+                         playerSound.volume = (playerData[pName].length > 1 ? playerData[pName][1] : 1);
                          playerSound.play();
-                     }
-                     else
+                         soundPlaying = true; // set flag
+                    }
+                     else if (playerData["some ball"]) {
+                        playerSound.src = playerData["some ball"][0];
+                        playerSound.volume = (playerData["some ball"].length > 1 ? playerData["some ball"][1] : 1);
+                        playerSound.play();
+                        soundPlaying = true; // set flag
+                     } else
                      {
                             if (musicElement) {
                                   fadeInMusic(musicElement, originalMusicVolume);
@@ -160,7 +153,7 @@ tagpro.ready(function () {
                       }
                   }
                }
-            }, waitTimeout);
+             }, waitTimeout);
         }
     });
 });
