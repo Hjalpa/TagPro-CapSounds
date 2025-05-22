@@ -5,6 +5,8 @@
 // @include       https://tagpro*.koalabeast.com/game?*
 // @include       https://bash-tp.github.io/tagpro-vcr/*
 // @author        Poeticalto, Hjalpa
+// @updateURL     https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/TagPro%20Team%20CapSounds-1.0.user.js
+// @downloadURL   https://github.com/Hjalpa/TagPro-CapSounds/raw/refs/heads/main/TagPro%20Team%20CapSounds-1.0.user.js
 // @version       1.0
 // ==/UserScript==
 
